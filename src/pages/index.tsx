@@ -1,27 +1,13 @@
-"use client";
-import { useEffect, useState } from 'react';
+import { GetStaticProps } from "next";
 import { Product } from '../types/product';
-import { calculateDiscountPrice } from '../util/calculateDiscountPrice.ts';
+import { calculateDiscountPrice } from '../util/calculateDiscountPrice';
 import StarRating from '../components/ratingStart';
 
-const Home = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+interface HomeProps {
+  products: Product[];
+}
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const res = await fetch('https://dummyjson.com/products');
-      const data = await res.json();
-      setProducts(data.products);
-      setLoading(false);
-    };
-
-    fetchProducts();
-  }, []);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+const Home = ({ products }: HomeProps) => {
 
   return (
     <div className="bg-white">
@@ -61,6 +47,18 @@ const Home = () => {
       </div>
     </div>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const res = await fetch('https://dummyjson.com/products');
+  const data = await res.json();
+  const products: Product[] = data.products;
+
+  return {
+    props: {
+      products,
+    },
+  };
 };
 
 export default Home;
